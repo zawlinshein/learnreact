@@ -46,7 +46,9 @@ function App() {
         } else {
             newTodo = todo;
             console.log(todo);
-            edit(newTodo);
+            if (input.length >= 1) {
+                edit(newTodo);
+            }
             setEditTodo(null);
             setInput("");
         }
@@ -71,8 +73,7 @@ function App() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-            });
-            setTodos(todos.filter((t) => todo.id != t.id));
+            }).then(() => setTodos(todos.filter((t) => todo.id != t.id)));
         } catch (error) {
             console.log(error);
         }

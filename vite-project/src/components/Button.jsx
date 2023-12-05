@@ -19,9 +19,7 @@ export const Todo = ({ todo, event: { deleteTodo, setComplete, editContent } }) 
             <Button buttonName='delete' clickEvent={() => deleteTodo(todo)} />
             {!todo.isCompleted && (
                 <Button
-                    clickEvent={() =>
-                        setComplete({ id: todo.id, title: todo.title, isCompleted: true })
-                    }
+                    clickEvent={() => setComplete({ ...todo, isCompleted: true })}
                     buttonName='completed'
                 />
             )}
