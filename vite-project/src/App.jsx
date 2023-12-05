@@ -115,7 +115,7 @@ function App() {
         console.log(todo);
     };
 
-    // i don't really know what this does yet
+    // i don't really know what this does yet ( call the function that responsible for getting the data and stop ??)
     useEffect(() => {
         getTodos();
     }, []);
