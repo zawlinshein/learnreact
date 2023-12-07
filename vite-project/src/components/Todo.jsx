@@ -1,8 +1,10 @@
 const Button = (props) => {
+    console.log("button created");
     return <button onClick={props.clickEvent}>{props.buttonName}</button>;
 };
 
 export const Todo = ({ todo, event: { deleteTodo, setComplete, editContent } }) => {
+    console.log("todo created");
     return (
         <li
             style={{
