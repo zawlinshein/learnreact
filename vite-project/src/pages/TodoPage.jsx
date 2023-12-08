@@ -4,9 +4,31 @@ import Form from "../components/Form.jsx";
 import Parent from "../components/Parent.jsx";
 
 import CustomeUseEffect from "../useeffect/CustomeUseEffect.ts";
+import { createContext, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+
+export const ThemeContext = createContext(null);
 
 export default function TodoPage() {
     const CustomeUseEffect2 = CustomeUseEffect();
+
+    const [theme, setTheme] = useState("white");
+
+    const todoRef = useRef(null);
+
+    const testRef = useRef(0);
+
+    let normalVariable = 1;
+
+    console.log(normalVariable);
+    console.log(testRef);
+
+    const handleCLick = () => {
+        normalVariable++;
+        testRef.current++;
+        console.log(normalVariable);
+        console.log(testRef);
+    };
 
     // responsibe for submitting the input value or updating the curren todo
     const submit = (e, todo) => {
@@ -30,8 +52,14 @@ export default function TodoPage() {
                     })
                         .then((response) => response.json())
                         .then((json) =>
-                            CustomeUseEffect2.setTodos([...CustomeUseEffect2.todos, json])
+                            flushSync(() => {
+                                CustomeUseEffect2.setTodos([...CustomeUseEffect2.todos, json]);
+                            })
                         );
+                    console.log(todoRef.current);
+                    todoRef.current.lastChild.scrollIntoView({
+                        behavior: "smooth",
+                    });
                     CustomeUseEffect2.setInput("");
                 } catch (error) {
                     console.log(error);
@@ -77,12 +105,9 @@ export default function TodoPage() {
                 body: JSON.stringify(todo),
             });
             CustomeUseEffect2.setTodos((prevTodos) => {
-                const newTodos = [...prevTodos];
-                const index = newTodos.findIndex((t) => t.id === todo.id);
-                if (index !== -1) {
-                    newTodos[index] = todo;
-                }
-                return newTodos;
+                return prevTodos.map((currTodo) => {
+                    return currTodo.id === todo.id ? todo : currTodo;
+                });
             });
         } catch (error) {
             console.log(error);
@@ -102,22 +127,24 @@ export default function TodoPage() {
 
     return (
         <>
-            <Form
-                submit={(e) => submit(e, CustomeUseEffect2.editTodo)}
-                change={(e) => {
-                    const value = e.target.value;
-                    if (CustomeUseEffect2.editTodo) {
-                        CustomeUseEffect2.setEditTodo({
-                            ...CustomeUseEffect2.editTodo,
-                            title: value,
-                        });
-                        CustomeUseEffect2.setInput(value);
-                    } else {
-                        CustomeUseEffect2.setInput(value);
-                    }
-                }}
-                value={CustomeUseEffect2.input}
-            />
+            <ThemeContext.Provider value={{ theme, setTheme }}>
+                <Form
+                    submit={(e) => submit(e, CustomeUseEffect2.editTodo)}
+                    change={(e) => {
+                        const value = e.target.value;
+                        if (CustomeUseEffect2.editTodo) {
+                            CustomeUseEffect2.setEditTodo({
+                                ...CustomeUseEffect2.editTodo,
+                                title: value,
+                            });
+                            CustomeUseEffect2.setInput(value);
+                        } else {
+                            CustomeUseEffect2.setInput(value);
+                        }
+                    }}
+                    value={CustomeUseEffect2.input}
+                />
+            </ThemeContext.Provider>
             <div>
                 <ul
                     style={{
@@ -125,6 +152,7 @@ export default function TodoPage() {
                         flexDirection: "column",
                         gap: "10px",
                     }}
+                    ref={todoRef}
                 >
                     {CustomeUseEffect2.todos.map((todo) => {
                         return (
@@ -138,6 +166,7 @@ export default function TodoPage() {
                     })}
                 </ul>
                 <Parent />
+                <button onClick={handleCLick}>Click</button>
             </div>
         </>
     );

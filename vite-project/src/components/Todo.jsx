@@ -1,10 +1,13 @@
-const Button = (props) => {
+import { memo } from "react";
+
+const Button = memo((props) => {
     console.log("button created");
     return <button onClick={props.clickEvent}>{props.buttonName}</button>;
-};
+});
 
-export const Todo = ({ todo, event: { deleteTodo, setComplete, editContent } }) => {
+export const Todo = memo(({ todo, event: { deleteTodo, setComplete, editContent } }) => {
     console.log("todo created");
+    console.log(todo.id);
     return (
         <li
             style={{
@@ -27,4 +30,4 @@ export const Todo = ({ todo, event: { deleteTodo, setComplete, editContent } }) 
             )}
         </li>
     );
-};
+});
