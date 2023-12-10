@@ -14,7 +14,7 @@ function App() {
     return (
         <div
             style={{
-                paddingTop: "20px",
+                paddingTop: "40px",
             }}
         >
             <BrowserRouter>
