@@ -53,6 +53,11 @@ const Layout = () => {
                             Music Player
                         </Link>
                     </li>
+                    <li>
+                        <Link to='/react-hook-form' style={{ color: "white" }}>
+                            React Hook Form
+                        </Link>
+                    </li>
                 </ul>
             </nav>
 

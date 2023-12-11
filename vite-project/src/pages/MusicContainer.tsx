@@ -1,8 +1,13 @@
-import React, { useState, useReducer, useRef, useEffect, FC } from "react";
+import React, { useState, useReducer, useRef, useEffect, FC, useCallback } from "react";
 import { Music } from "../components/Music";
-import musicData from "/db/music.json";
 import { SideMusic } from "../components/SideBarMusic";
-import { FaLeaf } from "react-icons/fa";
+export type music = {
+    id: number;
+    songName: string;
+    singer: string;
+    songUrl: string;
+    imageUrl: string;
+};
 
 type action = {
     type: string;
@@ -23,31 +28,36 @@ const musicReducer = (state: string, action: action) => {
     }
 };
 
+import musicData from "/db/music.json";
+
 const MusicContainer: FC = (): React.JSX.Element => {
-    const [currentMusic, setCurrentMusic] = useState(0);
+    const [currentMusic, setCurrentMusic] = useState<number>(0);
     const [status, dispatch] = useReducer(musicReducer, "pause");
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [playNext, setPlayNext] = useState(false);
-    const currentMusicRef = useRef(null);
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const [playNext, setPlayNext] = useState<boolean>(false);
+    const currentMusicRef = useRef<HTMLDivElement | null>(null);
 
-    const musicRef = useRef(null);
+    const musicRef = useRef<HTMLAudioElement | null>(null);
 
-    const goNext = () => {
+    const goNext = useCallback((): void => {
         console.log("play next");
         setPlayNext(true);
         console.log(playNext);
-    };
+    }, [currentMusic]);
 
-    const handleClick = (index) => {
-        if (isPlaying) {
-            console.log("Pausing...");
-            dispatch({ type: "pause" });
-        } else {
-            console.log("Playing...");
-            dispatch({ type: "play" });
-        }
-        setCurrentMusic(index);
-    };
+    const handleClick = useCallback(
+        (index: number) => {
+            if (isPlaying) {
+                console.log("Pausing...");
+                dispatch({ type: "pause" });
+            } else {
+                console.log("Playing...");
+                dispatch({ type: "play" });
+            }
+            setCurrentMusic(index);
+        },
+        [isPlaying, dispatch, setCurrentMusic]
+    );
 
     useEffect(() => {
         // This useEffect will run whenever playNext changes
@@ -63,12 +73,12 @@ const MusicContainer: FC = (): React.JSX.Element => {
         switch (status) {
             case "play":
                 console.log("Playing...");
-                musicRef.current.play();
+                musicRef.current?.play();
                 setIsPlaying(true);
                 break;
             case "pause":
                 console.log("Pausing...");
-                musicRef.current.pause();
+                musicRef.current?.pause();
                 setIsPlaying(false);
                 break;
             case "next":
@@ -94,7 +104,7 @@ const MusicContainer: FC = (): React.JSX.Element => {
             isPlaying ? dispatch({ type: "play" }) : dispatch({ type: "pause" }); // Auto-play after updating currentMusic
         }
         setPlayNext(false);
-        currentMusicRef.current.scrollIntoView({
+        currentMusicRef.current?.scrollIntoView({
             behavior: "smooth",
             block: "nearest",
             inline: "center",
@@ -106,8 +116,8 @@ const MusicContainer: FC = (): React.JSX.Element => {
             style={{
                 width: "100vw",
                 marginTop: "20px",
-                backgroundColor: "#fafafa",
                 display: "flex",
+                paddingBottom: "20px",
             }}
         >
             <div
@@ -125,7 +135,7 @@ const MusicContainer: FC = (): React.JSX.Element => {
                     scrollbarColor: "darkgrey lightgrey", // For Firefox
                 }}
             >
-                {musicData.map((music) => {
+                {musicData.map((music: music) => {
                     return (
                         <SideMusic
                             key={music.id}
